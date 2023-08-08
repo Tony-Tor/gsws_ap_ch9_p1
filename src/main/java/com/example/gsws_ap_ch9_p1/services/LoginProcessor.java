@@ -13,22 +13,31 @@ public class LoginProcessor {
 
     private static Logger logger = Logger.getLogger(LoginProcessor.class.getName());
 
+    private final LoggedUserManagementService loggedUserManagementService;
+    private final LoginCountService loginCountService;
+
     private String username;
     private String password;
 
-    public LoginProcessor() {
+    public LoginProcessor(LoggedUserManagementService loggedUserManagementService, LoginCountService loginCountService) {
+        this.loginCountService = loginCountService;
+        this.loggedUserManagementService = loggedUserManagementService;
         logger.info("Процессор логинов создан");
     }
 
     public boolean login(){
+        loginCountService.increment();
+
         String username = this.getUsername();
         String password = this.getPassword();
 
+        boolean loginResult = false;
+
         if ("natalie".equals(username) && "password".equals(password)) {
-            return true;
-        } else {
-            return false;
+            loginResult = true;
+            loggedUserManagementService.setUsername(username);
         }
+        return loginResult;
     }
 
     public String getUsername() {
